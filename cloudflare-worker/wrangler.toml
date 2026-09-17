@@ -1,0 +1,17 @@
+name = "xiangpan-art-api"
+main = "src/index.js"
+compatibility_date = "2026-09-17"
+workers_dev = true
+
+[vars]
+FRONTEND_ORIGIN = "https://YOUR-USER.github.io"
+# 可选：使用自定义域名时改成 https://www.yourdomain.com
+
+[[d1_databases]]
+binding = "DB"
+database_name = "xiangpan-art"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "xiangpan-art"
