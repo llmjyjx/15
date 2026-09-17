@@ -2,7 +2,7 @@
   const el=document.getElementById('socialFooter');
   if(!el)return;
   try{
-    const d=await fetch('/api/site').then(r=>r.json());
+    const d=await apiFetch('api/site').then(r=>r.json());
     let social={微博:'',抖音:'',公众号:''};
     try{
       const raw=JSON.parse(d.social_links||'{}');
