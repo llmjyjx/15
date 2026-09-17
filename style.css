@@ -253,3 +253,59 @@ html.dark-theme .work-card .pic{
 }
 html.dark-theme .work-card p{color:#aaa;}
 
+/* V46 上传按钮十字居中 */
+.upload-tile{
+  position:relative !important;
+  width:150px !important;
+  height:150px !important;
+  box-sizing:border-box !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  margin:0 !important;
+  overflow:hidden !important;
+  flex-direction:row !important;
+}
+.upload-tile .plus-icon,
+.plus-icon{
+  position:relative !important;
+  width:40px !important;
+  height:40px !important;
+  display:block !important;
+  margin:0 auto !important;
+  flex:none !important;
+  pointer-events:none;
+}
+.upload-tile .plus-icon:before,
+.upload-tile .plus-icon:after,
+.plus-icon:before,
+.plus-icon:after{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  background:#777 !important;
+  transform:translate(-50%,-50%) !important;
+}
+.upload-tile .plus-icon:before,
+.plus-icon:before{
+  width:100% !important;
+  height:2px !important;
+}
+.upload-tile .plus-icon:after,
+.plus-icon:after{
+  width:2px !important;
+  height:100% !important;
+}
+.upload-tile input[type=file]{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  opacity:0 !important;
+  cursor:pointer !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
