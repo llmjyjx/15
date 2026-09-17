@@ -7,7 +7,7 @@ window.XIANGPAN_CONFIG = {
   mode: 'auto',
   // Supabase Edge Function 完成部署后填写：
   // https://你的项目ID.supabase.co/functions/v1/api
-  cloudApiBase: 'https://urwzkpqflmkzwssadvpw.supabase.co/functions/v1/api',
+  cloudApiBase: 'https://urwzkpqflmkzwssadvpw.supabase.co/functions/v1',
   // 本地 Flask 默认 5038
   localApiBase: 'http://127.0.0.1:5038',
   localOrigin: 'http://127.0.0.1:5038'
