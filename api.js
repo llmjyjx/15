@@ -41,6 +41,12 @@
       const path=v.replace(/^\/+/, '');
       return (window.XIANGPAN_RUNTIME.apiBase||'')+'/'+path;
     }
+    // 云端 Storage：sb/works/xxx.jpg -> Supabase public URL
+    if(v.startsWith('sb/')){
+      const base=(window.XIANGPAN_CONFIG&&window.XIANGPAN_CONFIG.cloudApiBase)||'';
+      const m=String(base).match(/^(https?:\/\/[^/]+)/i);
+      if(m) return m[1]+'/storage/v1/object/public/art-images/'+v.slice(3);
+    }
     if(v.startsWith('/'))return v.slice(1);
     return v;
   };

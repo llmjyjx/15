@@ -4,7 +4,7 @@
  * auto   = localhost / 127.0.0.1 / file 协议自动本地，其它正式域名自动云端
  */
 window.XIANGPAN_CONFIG = {
-  mode: 'auto',
+  mode: 'cloud',
   // Supabase Edge Function 完成部署后填写：
   // https://你的项目ID.supabase.co/functions/v1/api 44
   cloudApiBase: 'https://urwzkpqflmkzwssadvpw.supabase.co/functions/v1',

@@ -18,3 +18,22 @@
   }catch(e){el.hidden=true;}
   function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 })();
+
+;(function(){
+  let n=0,t=0;
+  function bind(){
+    document.querySelectorAll('#copyrightTap, .copyright-tap').forEach(el=>{
+      if(el.dataset.tapBound) return;
+      el.dataset.tapBound='1';
+      el.style.cursor='default';
+      el.addEventListener('click', function(){
+        const now=Date.now();
+        if(now-t>1500)n=0;
+        t=now; n++;
+        if(n>=3){n=0; location.href='admin.html';}
+      });
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bind);
+  else bind();
+})();
