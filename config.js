@@ -4,9 +4,9 @@
  * auto   = localhost / 127.0.0.1 / file → 本地，其它 → 云端
  */
 window.XIANGPAN_CONFIG = {
-  mode: 'auto',
+  mode: 'cloud',
   // 部署后改成你的项目：https://<PROJECT_REF>.supabase.co/functions/v1/api
-  cloudApiBase: 'https://YOUR-PROJECT-REF.supabase.co/functions/v1/api',
+  cloudApiBase: 'https://urwzkpqflmkzwssadvpw.supabase.co/functions/v1/api',
   localApiBase: 'http://127.0.0.1:5038',
   localOrigin: 'http://127.0.0.1:5038'
 };
