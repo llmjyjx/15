@@ -175,13 +175,93 @@ async function delCat(id){if(confirm('确定删除该分类？')){try{await json
 async function addSub(cid){const el=document.getElementById('sub_'+cid);if(!el.value.trim())return;try{await jsonFetch('api/admin/subcategories',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({category_id:cid,name:el.value.trim()})});catsView()}catch(e){alert(e.message)}}
 async function renameSub(id,name){const n=prompt('新的细分类名称',name);if(n&&n.trim()){try{await jsonFetch('api/admin/subcategories/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n.trim()})});catsView()}catch(e){alert(e.message)}}}
 async function delSub(id){if(confirm('确定删除该细分类？')){try{await jsonFetch('api/admin/subcategories/'+id,{method:'DELETE'});catsView()}catch(e){alert(e.message)}}}
-async function siteView(){if(bioEditor){try{bioEditor.destroy()}catch(e){}bioEditor=null}const d=await jsonFetch('api/site');let social={微博:'',微信:'',小程序:'',学习强国号:'',视频号:'',抖音号:''};try{const raw=JSON.parse(d.social_links||'{}');if(Array.isArray(raw)){social.微博=raw[0]||'';social.抖音号=raw[1]||'';social.微信=raw[2]||''}else if(raw&&typeof raw==='object'){social.微博=raw.微博||'';social.微信=raw.微信||raw.公众号||'';social.小程序=raw.小程序||'';social.学习强国号=raw.学习强国号||'';social.视频号=raw.视频号||'';social.抖音号=raw.抖音号||raw.抖音||''}}catch(e){}
-view.innerHTML=`<h1 class="admin-title">站点信息</h1><div class="form-box"><div class="field"><label>站点名称 <i>必填，最多20字</i></label><input id="sn" maxlength="20" value="${esc(d.site_name||'')}"></div><div class="field"><label>站点 Logo（存本地 frontend/img，不上传云端）</label><div class="upload-line"><img id="logoPreview" class="site-preview" src="${esc(resolveAssetUrl(d.logo||''))}"><input id="sl" type="file" accept="image/*"></div><small class="hint">选择图片后自动保存，无需再点保存。</small></div><div class="field"><label>艺术家头像（建议200×200；存本地 frontend/img，不上传云端）</label><div class="upload-line"><img id="avatarPreview" class="site-preview" src="${esc(resolveAssetUrl(d.avatar||''))}"><input id="sa" type="file" accept="image/*"></div><small class="hint">选择图片后自动保存，无需再点保存。</small></div><div class="field"><label>艺术家姓名 <i>最多20字</i></label><input id="san" maxlength="20" value="${esc(d.artist_name||'')}"></div><div class="field"><label>艺术家简介</label><div class="wang-editor-wrap"><div id="bio-toolbar" class="wang-toolbar"></div><div id="bio-editor" class="wang-content"></div></div></div><div class="field"><label>社交媒体</label><div class="social-admin-grid"><label>微博<input id="socialWeibo" type="url" placeholder="微博链接" value="${esc(social.微博)}"></label><label>微信<input id="socialWechat" type="url" placeholder="微信/公众号链接" value="${esc(social.微信)}"></label><label>小程序<input id="socialMini" type="url" placeholder="小程序链接" value="${esc(social.小程序)}"></label><label>学习强国号<input id="socialXuexi" type="url" placeholder="学习强国号链接" value="${esc(social.学习强国号)}"></label><label>视频号<input id="socialShipinhao" type="url" placeholder="视频号链接" value="${esc(social.视频号)}"></label><label>抖音号<input id="socialDouyin" type="url" placeholder="抖音号链接" value="${esc(social.抖音号)}"></label></div><small class="hint">每项填写完整的 http:// 或 https:// 链接；有数据的项目才会在首页底部显示图标。</small></div><div class="form-actions"><button class="primary" onclick="saveSite()">保存</button></div></div>`;
-bioEditor=initEditor('#bio-editor','#bio-toolbar',d.artist_bio||'');
-document.getElementById('sl').onchange=e=>{previewSiteImage(e,'logoPreview');if(e.target.files?.[0])saveSite({quiet:true,fromImage:true})};
-document.getElementById('sa').onchange=e=>{previewSiteImage(e,'avatarPreview');if(e.target.files?.[0])saveSite({quiet:true,fromImage:true})}}
-function previewSiteImage(e,id){const f=e.target.files?.[0];if(f)document.getElementById(id).src=URL.createObjectURL(f)}
-async function saveSite(opt={}){const siteName=document.getElementById('sn').value.trim(),artistName=document.getElementById('san').value.trim();if(!siteName){alert('站点名称不能为空');return}if([...siteName].length>20||[...artistName].length>20){alert('名称最多20个字');return}const social={微博:document.getElementById('socialWeibo').value.trim(),微信:document.getElementById('socialWechat').value.trim(),小程序:document.getElementById('socialMini').value.trim(),学习强国号:document.getElementById('socialXuexi').value.trim(),视频号:document.getElementById('socialShipinhao').value.trim(),抖音号:document.getElementById('socialDouyin').value.trim()},re=/^https?:\/\/[^\s]+$/i;if(Object.values(social).some(x=>x&&!re.test(x))){alert('社交媒体链接格式不正确，请填写 http:// 或 https:// 链接');return}const f=new FormData();f.append('site_name',siteName);f.append('artist_name',artistName);f.append('artist_bio',bioEditor?bioEditor.getHtml():'');f.append('social_links',JSON.stringify(social));const li=document.getElementById('sl'),ai=document.getElementById('sa');if(li.files[0])f.append('logo',li.files[0]);if(ai.files[0])f.append('avatar',ai.files[0]);try{const res=await jsonFetch('api/admin/site',{method:'POST',body:f});if(opt.quiet){if(li)li.value='';if(ai)ai.value='';if(res.logo)document.getElementById('logoPreview').src=resolveAssetUrl(res.logo)+'?t='+Date.now();if(res.avatar)document.getElementById('avatarPreview').src=resolveAssetUrl(res.avatar)+'?t='+Date.now();const tip=document.createElement('div');tip.className='hint';tip.style.color='#2a7';tip.textContent=opt.fromImage?'图片已上传并自动保存':'已保存';const box=document.querySelector('.form-box');if(box){const old=box.querySelector('.auto-save-tip');if(old)old.remove();tip.classList.add('auto-save-tip');box.insertBefore(tip,box.firstChild);setTimeout(()=>tip.remove(),2500)}}else{alert('已保存');siteView()}}catch(e){alert(e.message)}}
+async function siteView(){
+  if(bioEditor){try{bioEditor.destroy()}catch(e){}bioEditor=null}
+  const d=await jsonFetch('api/site');
+  let social={微博:'',抖音:'',微信公众号:''};
+  try{
+    const raw=JSON.parse(d.social_links||'{}');
+    if(Array.isArray(raw)){social.微博=raw[0]||'';social.抖音=raw[1]||'';social.微信公众号=raw[2]||''}
+    else if(raw&&typeof raw==='object'){
+      social.微博=raw.微博||'';
+      social.抖音=raw.抖音||raw.抖音号||'';
+      social.微信公众号=raw.微信公众号||raw.微信||raw.公众号||'';
+    }
+  }catch(e){}
+  view.innerHTML=`<h1 class="admin-title">站点信息</h1><div class="form-box">
+    <div class="field"><label>站点名称 <i>必填，最多20字</i></label><input id="sn" maxlength="20" value="${esc(d.site_name||'')}"></div>
+    <div class="field"><label>站点 Logo（存入 Supabase Storage）</label>
+      <div class="upload-line"><img id="logoPreview" class="site-preview" src="${esc(resolveAssetUrl(d.logo||''))}" alt="logo"><input id="sl" type="file" accept="image/*"></div>
+      <small class="hint">选择图片后自动上传并保存，无需再点保存。</small></div>
+    <div class="field"><label>艺术家头像（建议 200×200，存入 Supabase Storage）</label>
+      <div class="upload-line"><img id="avatarPreview" class="site-preview" src="${esc(resolveAssetUrl(d.avatar||''))}" alt="avatar"><input id="sa" type="file" accept="image/*"></div>
+      <small class="hint">选择图片后自动上传并保存，无需再点保存。</small></div>
+    <div class="field"><label>艺术家姓名 <i>最多20字</i></label><input id="san" maxlength="20" value="${esc(d.artist_name||'')}"></div>
+    <div class="field"><label>艺术家简介</label><div class="wang-editor-wrap"><div id="bio-toolbar" class="wang-toolbar"></div><div id="bio-editor" class="wang-content"></div></div></div>
+    <div class="field"><label>社交媒体</label>
+      <div class="social-admin-grid">
+        <label>微博<input id="socialWeibo" type="url" placeholder="https://weibo.com/..." value="${esc(social.微博)}"></label>
+        <label>抖音<input id="socialDouyin" type="url" placeholder="https://www.douyin.com/..." value="${esc(social.抖音)}"></label>
+        <label>微信公众号<input id="socialWechat" type="url" placeholder="公众号文章或介绍页链接" value="${esc(social.微信公众号)}"></label>
+      </div>
+      <small class="hint">填写完整 http(s) 链接；有数据的项才会在首页底部显示彩色图标。</small>
+    </div>
+    <div class="form-actions"><button class="primary" type="button" onclick="saveSite()">保存</button></div>
+  </div>`;
+  bioEditor=initEditor('#bio-editor','#bio-toolbar',d.artist_bio||'');
+  document.getElementById('sl').onchange=async e=>{
+    previewSiteImage(e,'logoPreview');
+    if(e.target.files&&e.target.files[0]) await saveSite({quiet:true,fromImage:true,imageKind:'logo'});
+  };
+  document.getElementById('sa').onchange=async e=>{
+    previewSiteImage(e,'avatarPreview');
+    if(e.target.files&&e.target.files[0]) await saveSite({quiet:true,fromImage:true,imageKind:'avatar'});
+  };
+}
+function previewSiteImage(e,id){const f=e.target.files&&e.target.files[0];if(f)document.getElementById(id).src=URL.createObjectURL(f)}
+function showSiteTip(msg,ok=true){
+  const box=document.querySelector('.form-box'); if(!box) return;
+  const old=box.querySelector('.auto-save-tip'); if(old) old.remove();
+  const tip=document.createElement('div'); tip.className='hint auto-save-tip'; tip.style.color=ok?'#2a7':'#a33'; tip.textContent=msg;
+  box.insertBefore(tip,box.firstChild); setTimeout(()=>tip.remove(),4000);
+}
+async function saveSite(opt={}){
+  const siteName=(document.getElementById('sn')?.value||'').trim();
+  const artistName=(document.getElementById('san')?.value||'').trim();
+  if(!siteName){alert('站点名称不能为空');return}
+  if([...siteName].length>20||[...artistName].length>20){alert('名称最多20个字');return}
+  const social={
+    微博:(document.getElementById('socialWeibo')?.value||'').trim(),
+    抖音:(document.getElementById('socialDouyin')?.value||'').trim(),
+    微信公众号:(document.getElementById('socialWechat')?.value||'').trim()
+  };
+  const re=/^https?:\/\/[^\s]+$/i;
+  if(Object.values(social).some(x=>x&&!re.test(x))){alert('社交媒体链接格式不正确，请填写 http:// 或 https:// 链接');return}
+  const f=new FormData();
+  f.append('site_name',siteName);
+  f.append('artist_name',artistName);
+  f.append('artist_bio',bioEditor?bioEditor.getHtml():'');
+  f.append('social_links',JSON.stringify(social));
+  const li=document.getElementById('sl'), ai=document.getElementById('sa');
+  if(li&&li.files&&li.files[0]) f.append('logo',li.files[0]);
+  if(ai&&ai.files&&ai.files[0]) f.append('avatar',ai.files[0]);
+  try{
+    const res=await jsonFetch('api/admin/site',{method:'POST',body:f});
+    if(li) li.value='';
+    if(ai) ai.value='';
+    if(res.logo){const el=document.getElementById('logoPreview'); if(el) el.src=resolveAssetUrl(res.logo)+'?t='+Date.now()}
+    if(res.avatar){const el=document.getElementById('avatarPreview'); if(el) el.src=resolveAssetUrl(res.avatar)+'?t='+Date.now()}
+    if(opt.quiet){
+      showSiteTip(opt.fromImage?'图片已上传并自动保存':'已保存');
+    }else{
+      alert('已保存');
+      siteView();
+    }
+  }catch(e){
+    showSiteTip(e.message||'保存失败',false);
+    if(!opt.quiet) alert(e.message||'保存失败');
+  }
+}
 async function adminsView(){try{const d=await jsonFetch('api/admin/admins');const q=document.getElementById('adminAccountSearch')?.value?.trim().toLowerCase()||'';const rows=q?d.filter(x=>(x.username+' '+(x.display_name||'')).toLowerCase().includes(q)):d;view.innerHTML=`<h1 class="admin-title">管理员管理</h1><div class="toolbar"><input id="adminAccountSearch" value="${esc(q)}" placeholder="搜索账号或名称"><button class="primary" onclick="adminsView()">搜索</button><button class="primary" onclick="adminForm()">增加管理员</button></div><table class="table"><thead><tr><th>账号</th><th>名称</th><th>权限</th><th>创建时间</th><th>操作</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(x.username)}</td><td>${esc(x.display_name||'')}</td><td>${x.role==='super'?'超级管理员':'管理员'}</td><td>${esc(x.created_at||'')}</td><td class="actions"><button onclick="adminForm(${x.id})">编辑</button><button onclick="delAdmin(${x.id})" ${x.username==='admin'?'disabled':''}>删除</button></td></tr>`).join('')}</tbody></table>`}catch(e){alert(e.message)}}
 
 async function adminForm(id){let d={username:'',display_name:'',role:'admin'};if(id)d=await jsonFetch('api/admin/admins/'+id);const isRoot=d.username==='admin'||d.role==='super';view.innerHTML=`<h1 class="admin-title">${id?'编辑管理员':'增加管理员'}</h1><div class="form-box"><div class="field"><label>账号</label><input id="au" maxlength="30" value="${esc(d.username)}"></div><div class="field"><label>密码 ${id?'<i>不修改可留空</i>':''}</label><input id="ap" type="password" minlength="6" placeholder="至少6位"></div><div class="field"><label>名称</label><input id="ad" maxlength="30" value="${esc(d.display_name||'')}"></div><div class="field"><label>权限</label><select id="ar" ${d.username==='admin'?'disabled':''}><option value="admin" ${d.role==='admin'?'selected':''}>普通管理员</option><option value="super" ${d.role==='super'?'selected':''}>超级管理员</option></select>${d.username==='admin'?'<small class="hint">admin 为固定超级管理员</small>':''}</div><div class="form-actions"><button class="primary" onclick="saveAdmin(${id||0})">保存</button><button onclick="adminsView()">返回列表</button></div></div>`}

@@ -37,11 +37,13 @@
     const v=String(value||'').trim();
     if(!v)return '';
     if(/^https?:\/\//i.test(v)||v.startsWith('data:')||v.startsWith('blob:'))return v;
+    // 兼容旧静态路径
+    if(v.startsWith('/img/')||v.startsWith('img/')) return v.replace(/^\/+/, '');
     if(/^\/?uploads\//i.test(v) && window.XIANGPAN_RUNTIME?.mode==='local'){
       const path=v.replace(/^\/+/, '');
       return (window.XIANGPAN_RUNTIME.apiBase||'')+'/'+path;
     }
-    // 云端 Storage：sb/works/xxx.jpg -> Supabase public URL
+    // Supabase Storage：sb/site/logo.webp、sb/works/...
     if(v.startsWith('sb/')){
       const base=(window.XIANGPAN_CONFIG&&window.XIANGPAN_CONFIG.cloudApiBase)||'';
       const m=String(base).match(/^(https?:\/\/[^/]+)/i);
@@ -50,4 +52,5 @@
     if(v.startsWith('/'))return v.slice(1);
     return v;
   };
+
 })();
