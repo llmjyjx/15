@@ -146,8 +146,27 @@ html.dark-theme .filter-line select{background:#1b1b1b;color:#eee;border-color:#
 html.dark-theme .danger{background:#8f2b2b;border-color:#8f2b2b;color:#fff}
 
 /* V28 社交媒体页脚 */
-.site-footer{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:28px 20px 30px;line-height:1.5;position:relative;z-index:2}.site-footer>div{display:block;position:relative}.social-footer{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;line-height:1.6;position:relative;z-index:3}.social-footer a{display:block;position:relative;line-height:1.6}.social-footer{display:flex;flex-direction:column;align-items:center;gap:5px;min-height:0}.social-footer[hidden]{display:none}.social-footer a{color:inherit;text-decoration:none;font-size:13px;letter-spacing:1px;transition:opacity .2s}.social-footer a:hover{opacity:.55;text-decoration:underline;text-underline-offset:4px}.social-admin-grid{display:flex;flex-direction:column;gap:10px;max-width:760px}.social-admin-grid>label{display:grid;grid-template-columns:70px minmax(0,1fr);gap:12px;align-items:center;font-weight:600}.social-admin-grid input{width:100%;box-sizing:border-box}.dark-theme .social-footer a{color:#eee}
-@media(max-width:700px){.site-footer{padding:24px 16px 28px}.social-admin-grid>label{grid-template-columns:58px minmax(0,1fr);gap:8px}}
+/* 页脚与社交媒体（有数据才显示图标行） */
+.site-footer{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:28px 20px 30px;line-height:1.5;position:relative;z-index:2}
+.site-footer>div{display:block;position:relative}
+.social-footer{width:100%;display:flex;flex-direction:row;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:18px 22px;min-height:0;position:relative;z-index:3}
+.social-footer[hidden]{display:none}
+.social-item{display:flex;flex-direction:column;align-items:center;gap:8px;color:inherit;text-decoration:none;min-width:56px;transition:opacity .2s}
+.social-item:hover{opacity:.7}
+.social-icon{width:48px;height:48px;border-radius:50%;background:rgba(120,120,120,.35);display:flex;align-items:center;justify-content:center;color:#fff}
+.social-icon svg{display:block}
+.social-label{font-size:12px;letter-spacing:.5px;color:inherit;opacity:.9;white-space:nowrap}
+.dark-theme .social-icon{background:rgba(255,255,255,.12);color:#eee}
+.dark-theme .social-label{color:#ddd}
+.social-admin-grid{display:flex;flex-direction:column;gap:10px;max-width:760px}
+.social-admin-grid>label{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:center;font-weight:600}
+.social-admin-grid input{width:100%;box-sizing:border-box}
+@media(max-width:700px){
+  .site-footer{padding:24px 16px 28px}
+  .social-footer{gap:14px 16px}
+  .social-icon{width:42px;height:42px}
+  .social-admin-grid>label{grid-template-columns:80px minmax(0,1fr);gap:8px}
+}
 
 /* V31：用户端二级分类独立第二行，默认隐藏，选中有子分类的一级分类后显示 */
 .collection-page .sub-filter-row{grid-template-columns:1fr;padding-left:90px;}
@@ -333,3 +352,145 @@ html.dark-theme .work-card p{color:#aaa;}
   font-size:28px;line-height:1;cursor:pointer;
 }
 .img-lightbox-close:hover{background:rgba(255,255,255,.28)}
+
+/* ========== V51 首页固定位：避免数据加载位移 ========== */
+.home-head{
+  position:relative !important;
+  height:15vh !important;
+  min-height:88px !important;
+  max-height:120px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  padding:0 5vw !important;
+  box-sizing:border-box !important;
+}
+.home-logo-wrap{
+  position:relative !important;
+  width:min(28vw, 280px) !important;
+  height:75px !important;
+  min-width:160px !important;
+  flex:0 0 auto !important;
+  display:block !important;
+}
+/* logo 与站名叠在同一固定区域，用透明度切换，不改变布局 */
+.home-logo{
+  position:absolute !important;
+  left:0 !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  width:100px !important;
+  height:75px !important;
+  object-fit:contain !important;
+  object-position:left center !important;
+  margin:0 !important;
+  display:block !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+.home-logo.has-logo{
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+.home-logo-wrap .site-title{
+  position:absolute !important;
+  left:0 !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  margin:0 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  max-width:100% !important;
+  line-height:1.2 !important;
+  opacity:1 !important;
+  transition:opacity .15s !important;
+}
+.home-logo.has-logo + .site-title{
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  /* 仍占位，避免位移 */
+  display:block !important;
+}
+
+.home-main{
+  position:relative !important;
+  display:grid !important;
+  grid-template-columns:20% 80% !important;
+  height:auto !important;
+  flex:1 !important;
+  min-height:0 !important;
+  padding:0 3vw 2vw !important;
+}
+.artist{
+  position:relative !important;
+  display:block !important;
+  min-height:320px !important;
+  padding:2vw 1.5vw !important;
+  box-sizing:border-box !important;
+}
+/* 头像固定位置与尺寸 */
+.artist img#avatar,
+.artist > img{
+  position:absolute !important;
+  left:50% !important;
+  top:24px !important;
+  transform:translateX(-50%) !important;
+  width:120px !important;
+  height:120px !important;
+  max-width:120px !important;
+  border-radius:50% !important;
+  object-fit:cover !important;
+  background:#e8e6e0 !important;
+  display:block !important;
+}
+/* 姓名 + 简介固定在头像下方区域 */
+.artist > div{
+  position:absolute !important;
+  left:8% !important;
+  right:8% !important;
+  top:160px !important;
+  width:auto !important;
+  text-align:center !important;
+  margin:0 !important;
+}
+.artist h1#artistName,
+.artist h1{
+  position:relative !important;
+  min-height:36px !important;
+  height:36px !important;
+  line-height:36px !important;
+  font-size:24px !important;
+  font-weight:400 !important;
+  margin:0 0 12px 0 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+#artistBio{
+  position:relative !important;
+  min-height:120px !important;
+  max-height:220px !important;
+  overflow:auto !important;
+  font-size:15px !important;
+  line-height:1.9 !important;
+  text-align:center !important;
+  margin:0 !important;
+}
+#artistBio p{margin:0 0 .6em; line-height:1.9;}
+
+@media (max-width:900px){
+  .home-main{grid-template-columns:1fr !important; grid-template-rows:auto 1fr !important;}
+  .home-logo-wrap{width:min(55vw, 220px) !important; height:60px !important;}
+  .home-logo{width:80px !important; height:60px !important;}
+  .artist{min-height:280px !important; order:1;}
+  .artist img#avatar,.artist > img{width:96px !important; height:96px !important; top:16px !important;}
+  .artist > div{top:128px !important;}
+  .artist h1#artistName,.artist h1{font-size:20px !important; height:32px !important; line-height:32px !important; min-height:32px !important;}
+  #artistBio{min-height:80px !important; max-height:160px !important; font-size:14px !important;}
+  .hero{order:2; min-height:40vh !important;}
+}
+

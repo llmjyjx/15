@@ -1,14 +1,12 @@
-/* 向攀艺术 V38：前后端分离 / 本地 + Supabase 云端自动识别
- * local  = 本地前端 + Flask API + SQLite
- * cloud  = GitHub Pages + Supabase Edge Function + Postgres + Storage
- * auto   = localhost / 127.0.0.1 / file 协议自动本地，其它正式域名自动云端
+/* 向攀艺术 V51：本地 + Supabase 自动识别
+ * local  = Flask + SQLite
+ * cloud  = GitHub Pages + Edge Function + Postgres + Storage
+ * auto   = localhost / 127.0.0.1 / file → 本地，其它 → 云端
  */
 window.XIANGPAN_CONFIG = {
-  mode: 'cloud',
-  // Supabase Edge Function 完成部署后填写：
-  // https://你的项目ID.supabase.co/functions/v1/api 44
-  cloudApiBase: 'https://urwzkpqflmkzwssadvpw.supabase.co/functions/v1',
-  // 本地 Flask 默认 5038
+  mode: 'auto',
+  // 部署后改成你的项目：https://<PROJECT_REF>.supabase.co/functions/v1/api
+  cloudApiBase: 'https://YOUR-PROJECT-REF.supabase.co/functions/v1/api',
   localApiBase: 'http://127.0.0.1:5038',
   localOrigin: 'http://127.0.0.1:5038'
 };
