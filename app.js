@@ -1,1 +1,31 @@
-let slides=[],idx=0,timer;async function load(){const [s,r]=await Promise.all([apiFetch('api/site').then(x=>x.json()),apiFetch('api/home/random').then(x=>x.json())]);siteName.textContent=s.site_name||'向攀艺术';footerSiteName.textContent=s.site_name||'向攀艺术';const logo=(s.logo||'').trim();siteLogo.src=logo?resolveAssetUrl(logo):'';siteLogo.classList.toggle('has-logo',!!logo);siteLogo.alt=logo?(s.site_name||'站点标志'):' ';artistName.textContent=s.artist_name||'向攀';artistBio.innerHTML=s.artist_bio||'';const av=resolveAssetUrl(s.avatar||'');if(av)avatar.src=av;avatar.alt=s.artist_name||'艺术家头像';slides=r;render();timer=setInterval(next,4500)}function render(){slidesEl.innerHTML=slides.map((x,i)=>`<a class="hero-slide ${i===idx?'active':''}" href="detail.html?id=${x.id}"><img src="${resolveAssetUrl(x.main_image)}" alt="${x.name||''}"><div></div></a>`).join('');caption.textContent=slides[idx]?.name||''}function next(){if(!slides.length)return;idx=(idx+1)%slides.length;render()}function prev(){if(!slides.length)return;idx=(idx-1+slides.length)%slides.length;render()}const slidesEl=document.getElementById('slides'),caption=document.getElementById('caption'),siteLogo=document.getElementById('siteLogo'),footerSiteName=document.getElementById('footerSiteName');document.getElementById('next').onclick=next;document.getElementById('prev').onclick=prev;load();
+let slides=[],idx=0,timer;
+async function load(){
+  const [s,r]=await Promise.all([apiFetch('api/site').then(x=>x.json()),apiFetch('api/home/random').then(x=>x.json())]);
+  const artist=(s.artist_name||'').trim();
+  artistName.textContent=artist;
+  artistName.hidden=!artist;
+  const bio=(s.artist_bio||'').trim();
+  artistBio.dataset.appManaged='1';
+  artistBio.innerHTML=bio;
+  artistBio.hidden=!bio;
+  const av=(s.avatar||'').trim();
+  if(av){
+    avatar.src=resolveAssetUrl(av);
+    avatar.alt=artist||'';
+    avatar.hidden=false;
+  }else{
+    avatar.removeAttribute('src');
+    avatar.alt='';
+    avatar.hidden=true;
+  }
+  slides=r.filter(x=>(x.main_image||'').trim());
+  const hero=document.querySelector('.hero');
+  if(hero) hero.hidden=!slides.length;
+  render();
+  if(slides.length) timer=setInterval(next,4500)
+}
+function render(){slidesEl.innerHTML=slides.map((x,i)=>`<a class=\"hero-slide ${i===idx?'active':''}\" href=\"detail.html?id=${x.id}\"><img src=\"${resolveAssetUrl(x.main_image)}\" alt=\"${x.name||''}\"></a>`).join('');caption.textContent=slides[idx]?.name||''}
+function next(){if(!slides.length)return;idx=(idx+1)%slides.length;render()}
+function prev(){if(!slides.length)return;idx=(idx-1+slides.length)%slides.length;render()}
+const slidesEl=document.getElementById('slides'),caption=document.getElementById('caption');
+document.getElementById('next').onclick=next;document.getElementById('prev').onclick=prev;load();
